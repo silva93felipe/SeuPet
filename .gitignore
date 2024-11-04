@@ -1,8 +1,6 @@
 .vscode/
-Api/bin/
-Api/obj/
-Domain/bin/
-Domain/obj/
-Infra/bin/
-Infra/obj/
+SeuPet/bin/
+SeuPet/obj/
+SeuPet/bin/
+SeuPet/obj/
 
