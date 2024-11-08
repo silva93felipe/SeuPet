@@ -8,7 +8,7 @@ namespace SeuPet.Models
         public bool Ativo {get; private set;}
         public int Id { get; private set; }
         public DateTime CreateAt { get; private set; }
-        public DateTime UpdateAt {get; private set;}
+        protected DateTime UpdateAt {get; set;}
 
         public Base(){
             Id = IdAutoIncrement++;

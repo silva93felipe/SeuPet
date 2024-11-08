@@ -22,5 +22,20 @@ namespace SeuPet.Models
             Tipo = tipo;
             Foto = string.Empty;
         }
+
+        public void Update(string nome, SexoEnum sexo, DateTime dataNascimento, TipoSanguineoEnum tipoSanguineo, TipoPetEnum tipo){
+            Nome = nome;
+            Sexo = sexo;
+            DataNascimento = dataNascimento;
+            TipoSanguineo = tipoSanguineo;
+            Tipo = tipo;
+            Foto = string.Empty;
+            UpdateAt = DateTime.Now;
+        }
+
+        public void Adotar(){
+            Status = StatusPetEnum.Adotado;
+            UpdateAt = DateTime.Now;
+        }
     }
 }

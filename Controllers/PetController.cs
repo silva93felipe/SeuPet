@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using SeuPet.Dto;
 using SeuPet.Enums;
+using SeuPet.Mapping;
 using SeuPet.Models;
 
 namespace SeuPet.Controllers
@@ -22,16 +23,16 @@ namespace SeuPet.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            return Ok(pets.Where(e => e.Status == StatusPetEnum.Espera));
+            return Ok(pets.Where(e => e.Status == StatusPetEnum.Espera).Select( pet => pet.ToPetResponse()));
         }
 
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
-            var pet = pets.Find(p => p.Id == id);
+            var pet = pets.Find(p => p.Id == id && p.Status == StatusPetEnum.Espera);
             if(pet == null)
                 return NotFound();
-            return Ok(pet);
+            return Ok(pet.ToPetResponse());
         }
 
         [HttpPost]
@@ -41,15 +42,25 @@ namespace SeuPet.Controllers
             return Ok();
         }
 
+        [HttpPost]
+        [Route("{id}/Adotar")]
+        public IActionResult Adotar(int id)
+        {
+            var petDb = pets.Find(p => p.Id == id && p.Status == StatusPetEnum.Espera);
+            if(petDb == null)
+                return NotFound();
+            petDb.Adotar();
+            return Ok();
+        }
+
         [HttpPut("{id}")]
         public IActionResult Update(int id, PetRequest pet)
         {
             var petDb = pets.Find(p => p.Id == id);
             if(petDb == null)
                 return NotFound();
-
+            petDb.Update(pet.Nome, pet.Sexo, pet.DataNascimento, pet.TipoSanguineo, pet.Tipo);
             return NoContent();
-
         }
 
         [HttpDelete("{id}")]
@@ -58,7 +69,6 @@ namespace SeuPet.Controllers
             var petNoBanco = pets.Find(p => p.Id == id);
             if(petNoBanco == null)
                 return NotFound();
-
             pets.Remove(petNoBanco);
             return NoContent();            
         }
