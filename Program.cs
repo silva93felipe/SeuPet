@@ -6,6 +6,9 @@ using SeuPet.Models;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<SeuPetContext>( options => {
+    options.UseNpgsql(builder.Configuration.GetConnectionString("Test"));
+});
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

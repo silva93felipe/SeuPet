@@ -1,6 +1,2 @@
-.vscode/
-SeuPet/bin/
-SeuPet/obj/
-SeuPet/bin/
-SeuPet/obj/
-
+bin/
+obj/
