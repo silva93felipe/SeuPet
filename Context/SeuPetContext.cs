@@ -8,18 +8,9 @@ public class SeuPetContext : DbContext
     public DbSet<Pet> Pet { get; set; }
     public DbSet<Adocao> Adocao { get; set; }
     public DbSet<Adotante> Adotante { get; set; }
-    //public string DbPath { get; }
-    public SeuPetContext(DbContextOptions<SeuPetContext> options) : base(options)
-    {
-        // var folder = Environment.SpecialFolder.LocalApplicationData;
-        // var path = Environment.GetFolderPath(folder);
-        // DbPath = System.IO.Path.Join(path, "blogging.db");
-    }
-   /*  protected override void OnConfiguring(DbContextOptionsBuilder options)
-        => options.UseNpgsql(); */
+    public SeuPetContext(DbContextOptions<SeuPetContext> options) : base(options){ }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder){
-        modelBuilder.HasDefaultSchema("SeuPet");
         modelBuilder.Entity<Pet>()
                     .HasKey(p => p.Id);
         modelBuilder.Entity<Pet>()
@@ -37,25 +28,35 @@ public class SeuPetContext : DbContext
         modelBuilder.Entity<Pet>()  
                     .Property(e => e.TipoSanguineo).IsRequired();
         modelBuilder.Entity<Pet>()  
-                    .Property(e => e.CreateAt).HasDefaultValue(DateTime.Now);
+                    .Property(e => e.CreateAt).HasDefaultValue(DateTime.UtcNow);
         modelBuilder.Entity<Pet>()  
-                    .Property(e => e.UpdateAt).HasDefaultValue(DateTime.Now);
+                    .Property(e => e.UpdateAt).HasDefaultValue(DateTime.UtcNow);
         modelBuilder.Entity<Pet>().HasIndex(e => e.Id);
 
 
         modelBuilder.Entity<Adocao>()
-                    .HasKey(p => p.Id);
+                    .HasKey(p => new { p.AdotanteId, p.PetId });
         modelBuilder.Entity<Adocao>()
                     .Property(e => e.Ativo).IsRequired();
         modelBuilder.Entity<Adocao>()  
-                    .Property(e => e.CreateAt).HasDefaultValue(DateTime.Now);
+                    .Property(e => e.CreateAt).HasDefaultValue(DateTime.UtcNow);
         modelBuilder.Entity<Adocao>()  
-                    .Property(e => e.UpdateAt).HasDefaultValue(DateTime.Now);
+                    .Property(e => e.UpdateAt).HasDefaultValue(DateTime.UtcNow);
         modelBuilder.Entity<Adocao>()
                     .Property(e => e.PetId).IsRequired();
         modelBuilder.Entity<Adocao>()
+                    .HasOne(e => e.Pet)
+                    .WithMany(a => a.Adocao)
+                    .HasForeignKey(a => a.PetId)
+                    .OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<Adocao>()
                     .Property(e => e.AdotanteId).IsRequired();
-        modelBuilder.Entity<Adocao>().HasIndex(e => e.Id);
+        modelBuilder.Entity<Adocao>()
+                    .HasOne(e => e.Adotante)
+                    .WithMany(a => a.Adocao)
+                    .HasForeignKey(a => a.AdotanteId)
+                    .OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<Adocao>().HasIndex(e => new { e.AdotanteId, e.PetId });
         modelBuilder.Entity<Adocao>().HasIndex(e => e.CreateAt);
 
 
@@ -64,9 +65,9 @@ public class SeuPetContext : DbContext
         modelBuilder.Entity<Adotante>()
                     .Property(e => e.Ativo).IsRequired();
         modelBuilder.Entity<Adotante>()  
-                    .Property(e => e.CreateAt).HasDefaultValue(DateTime.Now);
+                    .Property(e => e.CreateAt).HasDefaultValue(DateTime.UtcNow);
         modelBuilder.Entity<Adotante>()  
-                    .Property(e => e.UpdateAt).HasDefaultValue(DateTime.Now);
+                    .Property(e => e.UpdateAt).HasDefaultValue(DateTime.UtcNow);
         modelBuilder.Entity<Adotante>()
                     .Property(e => e.Email).IsRequired().HasMaxLength(150);
         modelBuilder.Entity<Adotante>()

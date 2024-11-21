@@ -14,7 +14,7 @@ namespace SeuPet.Models
         public override void Inativar()
         {
             Ativo = false;
-            UpdateAt = DateTime.Now;
+            UpdateAt = DateTime.UtcNow;
         }
     }
 }

@@ -4,6 +4,7 @@ namespace SeuPet.Models
 {
     public class Adotante : Base
     {
+        public int Id { get; private set;}
         public string Nome { get; private set; }
         public string Email { get; private set; }
         public DateTime DataNascimento { get; private set; }
@@ -21,7 +22,7 @@ namespace SeuPet.Models
         public override void Inativar()
         {
             Ativo = false;
-            UpdateAt = DateTime.Now;
+            UpdateAt = DateTime.UtcNow;
         }
     }
 }

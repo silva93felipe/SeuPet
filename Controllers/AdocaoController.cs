@@ -20,47 +20,54 @@ namespace SeuPet.Controllers
             _context = context;
         }
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAllAsync()
         {
-            return Ok(_context.Adocao.AsNoTracking().Select(e => e.ToAdocaoResponse()));
+            var result = await _context.Adocao
+                                       .AsNoTracking()
+                                       .Select(e => e.ToAdocaoResponse())
+                                       .ToListAsync();
+            return Ok(result);
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetByIdAsync(int id)
         {
-            var adocao = _context.Adocao.AsNoTracking().FirstOrDefault(e => e.Id == id && e.Ativo);
+            // TODO
+            var adocao = await _context.Adocao.AsNoTracking().FirstOrDefaultAsync();
             if(adocao == null)
                 return NotFound();
             return Ok(adocao.ToAdocaoResponse());
         }
 
         [HttpPost]
-        public IActionResult Create(AdocaoRequest request)
+        public async Task<IActionResult> CreateAsync(AdocaoRequest request)
         {
-            _context.Adocao.Add(request.ToAdocao());
-            _context.SaveChangesAsync();    
+            await _context.Adocao.AddAsync(request.ToAdocao());
+            await _context.SaveChangesAsync();    
             return Created();
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, AdocaoRequest request)
+        public async Task<IActionResult> UpdateAsync(int id, AdocaoRequest request)
         { 
-            var adocao = _context.Adocao.FirstOrDefault(e => e.Id == id && e.Ativo);
+             // TODO
+            var adocao = await _context.Adocao.FirstOrDefaultAsync();
             if( adocao == null )
                 return NotFound();
             
-            _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> DeleteAsync(int id)
         {
-            var adocao = _context.Adocao.FirstOrDefault(e => e.Id == id && e.Ativo);
+            // TODO
+            var adocao = await _context.Adocao.FirstOrDefaultAsync();
             if( adocao == null )
                 return NotFound();
             adocao.Inativar();
-            _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
             return NoContent();            
         }
     }

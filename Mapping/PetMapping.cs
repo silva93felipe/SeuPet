@@ -11,7 +11,9 @@ namespace SeuPet.Mapping
                 pet.Sexo,
                 pet.DataNascimento,
                 pet.TipoSanguineo,
-                pet.Tipo
+                pet.Tipo,
+                pet.Foto
+
             );
         }
 
