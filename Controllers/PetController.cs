@@ -32,7 +32,7 @@ namespace SeuPet.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
-            var pet = await _context.Pet.FirstOrDefaultAsync(p => p.Id == id && p.Status == StatusPetEnum.Espera);
+            var pet = await _context.Pet.FirstOrDefaultAsync(p => p.Id == id && p.Status == StatusPetEnum.Espera && p.Ativo);
             if(pet == null)
                 return NotFound();
             return Ok(pet.ToPetResponse());
@@ -49,9 +49,11 @@ namespace SeuPet.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync(int id, PetRequest pet)
         {
-            var petDb = await _context.Pet.FirstOrDefaultAsync(p => p.Id == id);
+            var petDb = await _context.Pet.FirstOrDefaultAsync(p => p.Id == id && p.Status == StatusPetEnum.Espera && p.Ativo);
             if(petDb == null)
                 return NotFound();
+           /*  if(petDb.Status == StatusPetEnum.Adotado)
+                return BadRequest(new { message = "Pet já adotado" }); */
             petDb.Update(pet.Nome, pet.Sexo, pet.DataNascimento, pet.TipoSanguineo, pet.Tipo, pet.Foto);
             await _context.SaveChangesAsync();
             return NoContent();
@@ -60,7 +62,7 @@ namespace SeuPet.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
-            var petNoBanco = await _context.Pet.FirstOrDefaultAsync(p => p.Id == id);
+            var petNoBanco = await _context.Pet.FirstOrDefaultAsync(p => p.Id == id && p.Status == StatusPetEnum.Espera && p.Ativo);
             if(petNoBanco == null)
                 return NotFound();
             petNoBanco.Inativar();

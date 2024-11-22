@@ -7,7 +7,7 @@ namespace SeuPet.Mapping
     public static class AdocaoMapping{
 
         public static AdocaoResponse ToAdocaoResponse(this Adocao adocao){
-            return new AdocaoResponse(adocao.Pet.Nome, adocao.Adotante.Nome,adocao.PetId, adocao.AdotanteId);
+            return new AdocaoResponse(adocao.Pet.Nome, adocao.Adotante.Nome,adocao.PetId, adocao.AdotanteId, adocao.CreateAt.ToString("dd/MM/yyyy"));
         }
 
         public static Adocao ToAdocao(this AdocaoRequest request){

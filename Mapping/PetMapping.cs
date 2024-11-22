@@ -18,13 +18,14 @@ namespace SeuPet.Mapping
         }
 
         public static PetResponse ToPetResponse(this Pet pet){
-            return new PetResponse(){
-                Id = pet.Id,
-                Nome = pet.Nome,
-                DataNascimento = pet.DataNascimento.ToString("dd/MM/yyyy"),
-                Tipo = pet.Tipo.GetDisplayName(),
-                Sexo = pet.Sexo.GetDisplayName(),
-            };
+            return new PetResponse(
+                pet.Id,
+                pet.Nome,
+                pet.DataNascimento.ToString("dd/MM/yyyy"),
+                pet.Tipo.GetDisplayName(),
+                pet.Sexo.GetDisplayName(),
+                pet.Foto
+            );
         }
     }
 }

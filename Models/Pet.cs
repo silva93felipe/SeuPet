@@ -16,6 +16,7 @@ namespace SeuPet.Models
         public ICollection<Adocao> Adocao { get; private set; }
         private Pet(){}
         public Pet(string nome, SexoEnum sexo, DateTime dataNascimento, TipoSanguineoEnum tipoSanguineo, TipoPetEnum tipo, string foto){
+            IsValidNome(nome);
             Nome = nome;
             Sexo = sexo;
             DataNascimento = dataNascimento;
@@ -25,7 +26,14 @@ namespace SeuPet.Models
             Foto = foto;
         }
 
+        private void IsValidNome(string nome){
+            if(string.IsNullOrEmpty(nome)){
+                throw new ArgumentException("Nome é obrigatório.");
+            }
+        }
+
         public void Update(string nome, SexoEnum sexo, DateTime dataNascimento, TipoSanguineoEnum tipoSanguineo, TipoPetEnum tipo, string foto){
+            IsValidNome(nome);
             Nome = nome;
             Sexo = sexo;
             DataNascimento = dataNascimento;
@@ -36,12 +44,18 @@ namespace SeuPet.Models
         }
 
         public void Adotar(){
+            if(Status == StatusPetEnum.Adotado){
+                throw new ArgumentException("Pet já adotado.");
+            }
             Status = StatusPetEnum.Adotado;
             UpdateAt = DateTime.UtcNow;
         }
 
         public override void Inativar()
         {
+             if(Ativo == false){
+                throw new ArgumentException("Pet já inativo.");
+            }
             Ativo = false;
             UpdateAt = DateTime.UtcNow;
         }

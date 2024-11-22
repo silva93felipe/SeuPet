@@ -23,6 +23,8 @@ namespace SeuPet.Controllers
         public async Task<IActionResult> GetAllAsync()
         {
             var result = await _context.Adocao
+                                        .Include(x => x.Adotante)
+                                        .Include(x => x.Pet)
                                        .AsNoTracking()
                                        .Select(e => e.ToAdocaoResponse())
                                        .ToListAsync();
@@ -42,6 +44,14 @@ namespace SeuPet.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAsync(AdocaoRequest request)
         {
+            Pet pet = await _context.Pet.FindAsync(request.PetId);
+            if(pet == null)
+                return BadRequest(new { message = "Pet não localizado." });
+
+            Adotante adotante = await _context.Adotante.FindAsync(request.AdotanteId);
+            if(adotante == null)
+                return BadRequest(new { message = "Adotante não localizado." });
+            pet.Adotar();
             await _context.Adocao.AddAsync(request.ToAdocao());
             await _context.SaveChangesAsync();    
             return Created();
