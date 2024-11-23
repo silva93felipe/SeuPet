@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace SeuPet.Migrations
 {
     /// <inheritdoc />
-    public partial class inicial : Migration
+    public partial class Inicial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -23,8 +23,8 @@ namespace SeuPet.Migrations
                     DataNascimento = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Sexo = table.Column<int>(type: "integer", nullable: false),
                     Ativo = table.Column<bool>(type: "boolean", nullable: false),
-                    CreateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTime(2024, 11, 20, 22, 39, 53, 826, DateTimeKind.Utc).AddTicks(6636)),
-                    UpdateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTime(2024, 11, 20, 22, 39, 53, 826, DateTimeKind.Utc).AddTicks(7023))
+                    CreateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTime(2024, 11, 23, 13, 0, 58, 560, DateTimeKind.Utc).AddTicks(8471)),
+                    UpdateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTime(2024, 11, 23, 13, 0, 58, 560, DateTimeKind.Utc).AddTicks(8746))
                 },
                 constraints: table =>
                 {
@@ -44,61 +44,31 @@ namespace SeuPet.Migrations
                     Status = table.Column<int>(type: "integer", nullable: false),
                     Tipo = table.Column<int>(type: "integer", nullable: false),
                     Foto = table.Column<string>(type: "text", nullable: false, defaultValue: ""),
+                    AdotanteId = table.Column<int>(type: "integer", nullable: true),
+                    DataAdocao = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     Ativo = table.Column<bool>(type: "boolean", nullable: false),
-                    CreateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTime(2024, 11, 20, 22, 39, 53, 825, DateTimeKind.Utc).AddTicks(9615)),
-                    UpdateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTime(2024, 11, 20, 22, 39, 53, 825, DateTimeKind.Utc).AddTicks(9866))
+                    CreateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTime(2024, 11, 23, 13, 0, 58, 560, DateTimeKind.Utc).AddTicks(7359)),
+                    UpdateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTime(2024, 11, 23, 13, 0, 58, 560, DateTimeKind.Utc).AddTicks(7647))
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Pet", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Adocao",
-                columns: table => new
-                {
-                    PetId = table.Column<int>(type: "integer", nullable: false),
-                    AdotanteId = table.Column<int>(type: "integer", nullable: false),
-                    Ativo = table.Column<bool>(type: "boolean", nullable: false),
-                    CreateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTime(2024, 11, 20, 22, 39, 53, 826, DateTimeKind.Utc).AddTicks(2861)),
-                    UpdateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTime(2024, 11, 20, 22, 39, 53, 826, DateTimeKind.Utc).AddTicks(3251))
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Adocao", x => new { x.AdotanteId, x.PetId });
                     table.ForeignKey(
-                        name: "FK_Adocao_Adotante_AdotanteId",
+                        name: "FK_Pet_Adotante_AdotanteId",
                         column: x => x.AdotanteId,
                         principalTable: "Adotante",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Adocao_Pet_PetId",
-                        column: x => x.PetId,
-                        principalTable: "Pet",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Adocao_AdotanteId_PetId",
-                table: "Adocao",
-                columns: new[] { "AdotanteId", "PetId" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Adocao_CreateAt",
-                table: "Adocao",
-                column: "CreateAt");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Adocao_PetId",
-                table: "Adocao",
-                column: "PetId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Adotante_Id",
                 table: "Adotante",
                 column: "Id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Pet_AdotanteId",
+                table: "Pet",
+                column: "AdotanteId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Pet_Id",
@@ -110,13 +80,10 @@ namespace SeuPet.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Adocao");
+                name: "Pet");
 
             migrationBuilder.DropTable(
                 name: "Adotante");
-
-            migrationBuilder.DropTable(
-                name: "Pet");
         }
     }
 }

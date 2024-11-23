@@ -9,7 +9,8 @@ namespace SeuPet.Models
         public string Email { get; private set; }
         public DateTime DataNascimento { get; private set; }
         public SexoEnum Sexo { get; private set; }
-        public ICollection<Adocao> Adocao { get; private set; }
+        public ICollection<Pet> Pets { get; private set; }
+        private Adotante(){}
         public Adotante(string nome, string email, DateTime dataNascimento, SexoEnum sexo)
         {
             Nome = nome;
@@ -17,12 +18,26 @@ namespace SeuPet.Models
             DataNascimento = dataNascimento;
             Sexo = sexo;
         }
-        private Adotante(){}
+
+        public void Update(string nome, string email, DateTime dataNascimento, SexoEnum sexo)
+        {
+            JaInativo();
+            Nome = nome;
+            Email = email;
+            DataNascimento = dataNascimento;
+            Sexo = sexo;
+        }
 
         public override void Inativar()
         {
+            JaInativo();
             Ativo = false;
             UpdateAt = DateTime.UtcNow;
+        }
+
+        private void JaInativo(){
+            if(Ativo == false)
+                throw new ArgumentException("Adotante já inativo.");
         }
     }
 }

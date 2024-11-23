@@ -21,38 +21,6 @@ namespace SeuPet.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("SeuPet.Models.Adocao", b =>
-                {
-                    b.Property<int>("AdotanteId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("PetId")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("Ativo")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("CreateAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTime(2024, 11, 20, 22, 39, 53, 826, DateTimeKind.Utc).AddTicks(2861));
-
-                    b.Property<DateTime>("UpdateAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTime(2024, 11, 20, 22, 39, 53, 826, DateTimeKind.Utc).AddTicks(3251));
-
-                    b.HasKey("AdotanteId", "PetId");
-
-                    b.HasIndex("CreateAt");
-
-                    b.HasIndex("PetId");
-
-                    b.HasIndex("AdotanteId", "PetId");
-
-                    b.ToTable("Adocao");
-                });
-
             modelBuilder.Entity("SeuPet.Models.Adotante", b =>
                 {
                     b.Property<int>("Id")
@@ -67,7 +35,7 @@ namespace SeuPet.Migrations
                     b.Property<DateTime>("CreateAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTime(2024, 11, 20, 22, 39, 53, 826, DateTimeKind.Utc).AddTicks(6636));
+                        .HasDefaultValue(new DateTime(2024, 11, 23, 13, 0, 58, 560, DateTimeKind.Utc).AddTicks(8471));
 
                     b.Property<DateTime>("DataNascimento")
                         .HasColumnType("timestamp with time zone");
@@ -88,7 +56,7 @@ namespace SeuPet.Migrations
                     b.Property<DateTime>("UpdateAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTime(2024, 11, 20, 22, 39, 53, 826, DateTimeKind.Utc).AddTicks(7023));
+                        .HasDefaultValue(new DateTime(2024, 11, 23, 13, 0, 58, 560, DateTimeKind.Utc).AddTicks(8746));
 
                     b.HasKey("Id");
 
@@ -105,13 +73,19 @@ namespace SeuPet.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("AdotanteId")
+                        .HasColumnType("integer");
+
                     b.Property<bool>("Ativo")
                         .HasColumnType("boolean");
 
                     b.Property<DateTime>("CreateAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTime(2024, 11, 20, 22, 39, 53, 825, DateTimeKind.Utc).AddTicks(9615));
+                        .HasDefaultValue(new DateTime(2024, 11, 23, 13, 0, 58, 560, DateTimeKind.Utc).AddTicks(7359));
+
+                    b.Property<DateTime?>("DataAdocao")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("DataNascimento")
                         .HasColumnType("timestamp with time zone");
@@ -142,42 +116,29 @@ namespace SeuPet.Migrations
                     b.Property<DateTime>("UpdateAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTime(2024, 11, 20, 22, 39, 53, 825, DateTimeKind.Utc).AddTicks(9866));
+                        .HasDefaultValue(new DateTime(2024, 11, 23, 13, 0, 58, 560, DateTimeKind.Utc).AddTicks(7647));
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AdotanteId");
 
                     b.HasIndex("Id");
 
                     b.ToTable("Pet");
                 });
 
-            modelBuilder.Entity("SeuPet.Models.Adocao", b =>
+            modelBuilder.Entity("SeuPet.Models.Pet", b =>
                 {
                     b.HasOne("SeuPet.Models.Adotante", "Adotante")
-                        .WithMany("Adocao")
-                        .HasForeignKey("AdotanteId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("SeuPet.Models.Pet", "Pet")
-                        .WithMany("Adocao")
-                        .HasForeignKey("PetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .WithMany("Pets")
+                        .HasForeignKey("AdotanteId");
 
                     b.Navigation("Adotante");
-
-                    b.Navigation("Pet");
                 });
 
             modelBuilder.Entity("SeuPet.Models.Adotante", b =>
                 {
-                    b.Navigation("Adocao");
-                });
-
-            modelBuilder.Entity("SeuPet.Models.Pet", b =>
-                {
-                    b.Navigation("Adocao");
+                    b.Navigation("Pets");
                 });
 #pragma warning restore 612, 618
         }

@@ -13,7 +13,9 @@ namespace SeuPet.Models
         public StatusPetEnum Status { get; private set; }
         public TipoPetEnum Tipo { get; private set; } 
         public string Foto {get; private set;}         
-        public ICollection<Adocao> Adocao { get; private set; }
+        public virtual Adotante Adotante { get; private set; }
+        public int? AdotanteId { get; private set; }
+        public DateTime? DataAdocao {get; private set;}
         private Pet(){}
         public Pet(string nome, SexoEnum sexo, DateTime dataNascimento, TipoSanguineoEnum tipoSanguineo, TipoPetEnum tipo, string foto){
             IsValidNome(nome);
@@ -33,6 +35,8 @@ namespace SeuPet.Models
         }
 
         public void Update(string nome, SexoEnum sexo, DateTime dataNascimento, TipoSanguineoEnum tipoSanguineo, TipoPetEnum tipo, string foto){
+            JaAdotado();
+            JaInativo();
             IsValidNome(nome);
             Nome = nome;
             Sexo = sexo;
@@ -43,19 +47,29 @@ namespace SeuPet.Models
             UpdateAt = DateTime.UtcNow;
         }
 
-        public void Adotar(){
-            if(Status == StatusPetEnum.Adotado){
-                throw new ArgumentException("Pet já adotado.");
-            }
+        public void Adotar(int adotanteId){
+            JaAdotado();
+            JaInativo();
             Status = StatusPetEnum.Adotado;
             UpdateAt = DateTime.UtcNow;
+            AdotanteId = adotanteId;
+            DataAdocao = DateTime.UtcNow;
+        }
+
+        private void JaAdotado(){
+            if(Status == StatusPetEnum.Adotado || AdotanteId != null)
+                throw new ArgumentException("Pet já adotado.");
+        }
+
+        private void JaInativo(){
+            if(Ativo == false)
+                throw new ArgumentException("Pet já inativo.");
         }
 
         public override void Inativar()
         {
-             if(Ativo == false){
-                throw new ArgumentException("Pet já inativo.");
-            }
+            JaAdotado();
+            JaInativo();
             Ativo = false;
             UpdateAt = DateTime.UtcNow;
         }

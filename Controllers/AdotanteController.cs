@@ -55,9 +55,8 @@ namespace SeuPet.Controllers
             var adotante = await _context.Adotante.FirstOrDefaultAsync(e => e.Id == id && e.Ativo);
             if( adotante == null )
                 return NotFound();
-            
             var updateAdotante = request.ToAdotante();
-            adotante = updateAdotante;
+            adotante.Update(updateAdotante.Nome, updateAdotante.Email, updateAdotante.DataNascimento, updateAdotante.Sexo);
             await _context.SaveChangesAsync();
             return NoContent();
         }

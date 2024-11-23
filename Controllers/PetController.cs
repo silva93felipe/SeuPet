@@ -46,14 +46,27 @@ namespace SeuPet.Controllers
             return Created();
         }
 
+        [HttpPost]
+        [Route("Adotar")]
+        public async Task<IActionResult> AdotarAsync(AdocaoRequest request)
+        {
+            Pet pet = await _context.Pet.FirstOrDefaultAsync(p => p.Id == request.PetId && p.Status == StatusPetEnum.Espera && p.Ativo);
+            if(pet == null)
+               return NotFound();
+            Adotante adotante = await _context.Adotante.FirstOrDefaultAsync(p => p.Id == request.PetId && p.Ativo);
+            if(adotante == null)
+                return NotFound();
+            pet.Adotar(adotante.Id);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync(int id, PetRequest pet)
         {
             var petDb = await _context.Pet.FirstOrDefaultAsync(p => p.Id == id && p.Status == StatusPetEnum.Espera && p.Ativo);
             if(petDb == null)
                 return NotFound();
-           /*  if(petDb.Status == StatusPetEnum.Adotado)
-                return BadRequest(new { message = "Pet já adotado" }); */
             petDb.Update(pet.Nome, pet.Sexo, pet.DataNascimento, pet.TipoSanguineo, pet.Tipo, pet.Foto);
             await _context.SaveChangesAsync();
             return NoContent();

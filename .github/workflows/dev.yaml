@@ -1,0 +1,23 @@
+name: Dev
+on: [push]
+jobs:
+  restore:
+    name: Restaurando dependências
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Restaurar
+        run: dotnet restore
+  build:
+    name: Build application
+    runs-on: ubuntu-latest
+    needs: restore
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Restaurar
+        run: dotnet build
+

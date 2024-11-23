@@ -6,7 +6,6 @@ using System.Collections.Generic;
 public class SeuPetContext : DbContext
 {
     public DbSet<Pet> Pet { get; set; }
-    public DbSet<Adocao> Adocao { get; set; }
     public DbSet<Adotante> Adotante { get; set; }
     public SeuPetContext(DbContextOptions<SeuPetContext> options) : base(options){ }
     
@@ -33,33 +32,6 @@ public class SeuPetContext : DbContext
                     .Property(e => e.UpdateAt).HasDefaultValue(DateTime.UtcNow);
         modelBuilder.Entity<Pet>().HasIndex(e => e.Id);
 
-
-        modelBuilder.Entity<Adocao>()
-                    .HasKey(p => new { p.AdotanteId, p.PetId });
-        modelBuilder.Entity<Adocao>()
-                    .Property(e => e.Ativo).IsRequired();
-        modelBuilder.Entity<Adocao>()  
-                    .Property(e => e.CreateAt).HasDefaultValue(DateTime.UtcNow);
-        modelBuilder.Entity<Adocao>()  
-                    .Property(e => e.UpdateAt).HasDefaultValue(DateTime.UtcNow);
-        modelBuilder.Entity<Adocao>()
-                    .Property(e => e.PetId).IsRequired();
-        modelBuilder.Entity<Adocao>()
-                    .HasOne(e => e.Pet)
-                    .WithMany(a => a.Adocao)
-                    .HasForeignKey(a => a.PetId)
-                    .OnDelete(DeleteBehavior.Restrict);
-        modelBuilder.Entity<Adocao>()
-                    .Property(e => e.AdotanteId).IsRequired();
-        modelBuilder.Entity<Adocao>()
-                    .HasOne(e => e.Adotante)
-                    .WithMany(a => a.Adocao)
-                    .HasForeignKey(a => a.AdotanteId)
-                    .OnDelete(DeleteBehavior.Restrict);
-        modelBuilder.Entity<Adocao>().HasIndex(e => new { e.AdotanteId, e.PetId });
-        modelBuilder.Entity<Adocao>().HasIndex(e => e.CreateAt);
-
-
         modelBuilder.Entity<Adotante>()
                     .HasKey(p => p.Id);
         modelBuilder.Entity<Adotante>()
@@ -74,8 +46,13 @@ public class SeuPetContext : DbContext
                     .Property(e => e.Sexo).IsRequired();
         modelBuilder.Entity<Adotante>()
                     .Property(e => e.DataNascimento).IsRequired();
+        modelBuilder.Entity<Adotante>();
         modelBuilder.Entity<Adotante>()
                     .Property(e => e.Nome).IsRequired().HasMaxLength(100);      
+        modelBuilder.Entity<Adotante>()
+                    .HasMany(e => e.Pets)
+                    .WithOne(e => e.Adotante)
+                    .HasForeignKey(e => e.AdotanteId);
         modelBuilder.Entity<Adotante>().HasIndex(e => e.Id);               
     }
 }
