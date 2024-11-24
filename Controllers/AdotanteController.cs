@@ -69,7 +69,7 @@ namespace SeuPet.Controllers
                 return NotFound();
             adotante.Inativar();
             await _context.SaveChangesAsync();
-            return NoContent();            
+            return NoContent()            
         }
     }
 }
