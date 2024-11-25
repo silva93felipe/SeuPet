@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SeuPet.Dto;
@@ -11,20 +8,23 @@ using SeuPet.Models;
 namespace SeuPet.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/pets")]
     public class PetController : ControllerBase
     {
+        private readonly string _pathServidor;
         private readonly SeuPetContext _context;
-        public PetController(SeuPetContext context)
+        public PetController(SeuPetContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _pathServidor = env.ContentRootPath;
+
         }
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
             var result = await _context.Pet
                             .Where(e => e.Status == StatusPetEnum.Espera && e.Ativo)
-                            .Select( pet => pet.ToPetResponse())
+                            .Select( pet => pet)
                             .ToListAsync();
             return Ok(result);
         }
@@ -46,14 +46,31 @@ namespace SeuPet.Controllers
             return Created();
         }
 
-        [HttpPost]
-        [Route("Adotar")]
-        public async Task<IActionResult> AdotarAsync(AdocaoRequest request)
+        [HttpPost("{id}/upload")]
+        public async Task<IActionResult> Upload(int id, IFormFile request)
         {
-            Pet pet = await _context.Pet.FirstOrDefaultAsync(p => p.Id == request.PetId && p.Status == StatusPetEnum.Espera && p.Ativo);
+            string path = _pathServidor + "/Imagens/pets/";
+            string extensaoImagem = request.FileName.Split(".")[^1];
+            string nameFoto = id + "." + extensaoImagem; 
+            if( !Directory.Exists(path)){
+                Directory.CreateDirectory(path);
+            }
+            
+            using (var stream = System.IO.File.Create(path + nameFoto)){
+                await request.CopyToAsync(stream);
+            }
+
+            return NoContent();
+        }
+
+        [HttpPost("{petId}/adotar")]
+        // TODO - MELHORAR URL 
+        public async Task<IActionResult> AdotarAsync(int petId, [FromBody]int adotanteId)
+        {
+            Pet pet = await _context.Pet.FirstOrDefaultAsync(p => p.Id == petId && p.Status == StatusPetEnum.Espera && p.Ativo);
             if(pet == null)
                return NotFound();
-            Adotante adotante = await _context.Adotante.FirstOrDefaultAsync(p => p.Id == request.PetId && p.Ativo);
+            Adotante adotante = await _context.Adotante.FirstOrDefaultAsync(p => p.Id == adotanteId && p.Ativo);
             if(adotante == null)
                 return NotFound();
             pet.Adotar(adotante.Id);

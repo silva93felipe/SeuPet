@@ -22,8 +22,8 @@ namespace SeuPet.Mapping
                 pet.Id,
                 pet.Nome,
                 pet.DataNascimento.ToString("dd/MM/yyyy"),
-                pet.Tipo.GetDisplayName(),
                 pet.Sexo.GetDisplayName(),
+                pet.Tipo.GetDisplayName(),
                 pet.Foto
             );
         }

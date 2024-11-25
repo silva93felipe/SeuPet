@@ -1,17 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SeuPet.Dto;
-using SeuPet.Enums;
 using SeuPet.Mapping;
-using SeuPet.Models;
 
 namespace SeuPet.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/adotantes")]
     public class AdotanteController : ControllerBase
     {
         private readonly SeuPetContext _context;
