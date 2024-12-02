@@ -7,6 +7,7 @@
 - Paginar dados;
     > Usei query params para isso e nos endpoint de getall cololoquei um limite 5 forçado
 - Usar caches
+    > Redis
 - Criar erros customizados;
     > 
 - Tratar erros globais;
