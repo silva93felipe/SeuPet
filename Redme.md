@@ -8,6 +8,7 @@
     > Usei query params para isso e nos endpoint de getall cololoquei um limite 5 forçado
 - Usar caches
 - Criar erros customizados;
+    > 
 - Tratar erros globais;
 - query parametros para fazer consulta conforme filtro?
 - Criar área adminitrativa para cadastro de pets e adotantes;
