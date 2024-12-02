@@ -17,7 +17,7 @@ namespace SeuPet.Models
         public int? AdotanteId { get; private set; }
         public DateTime? DataAdocao {get; private set;}
         private Pet(){}
-        public Pet(string nome, SexoEnum sexo, DateTime dataNascimento, TipoSanguineoEnum tipoSanguineo, TipoPetEnum tipo, string foto){
+        public Pet(string nome, SexoEnum sexo, DateTime dataNascimento, TipoSanguineoEnum tipoSanguineo, TipoPetEnum tipo){
             IsValidNome(nome);
             Nome = nome;
             Sexo = sexo;
@@ -25,16 +25,15 @@ namespace SeuPet.Models
             TipoSanguineo = tipoSanguineo;
             Status = StatusPetEnum.Espera;
             Tipo = tipo;
-            Foto = foto;
         }
 
         private void IsValidNome(string nome){
-            if(string.IsNullOrEmpty(nome)){
+            if(string.IsNullOrEmpty(nome) || string.IsNullOrWhiteSpace(nome)){
                 throw new ArgumentException("Nome é obrigatório.");
             }
         }
 
-        public void Update(string nome, SexoEnum sexo, DateTime dataNascimento, TipoSanguineoEnum tipoSanguineo, TipoPetEnum tipo, string foto){
+        public void Update(string nome, SexoEnum sexo, DateTime dataNascimento, TipoSanguineoEnum tipoSanguineo, TipoPetEnum tipo){
             JaAdotado();
             JaInativo();
             IsValidNome(nome);
@@ -43,8 +42,11 @@ namespace SeuPet.Models
             DataNascimento = dataNascimento;
             TipoSanguineo = tipoSanguineo;
             Tipo = tipo;
-            Foto = foto;
             UpdateAt = DateTime.UtcNow;
+        }
+
+        public void UpdateImagem(string path){
+            Foto = path;
         }
 
         public void Adotar(int adotanteId){

@@ -1,7 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using SeuPet.Models;
-using System;
-using System.Collections.Generic;
 
 public class SeuPetContext : DbContext
 {

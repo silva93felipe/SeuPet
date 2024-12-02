@@ -9,7 +9,7 @@ namespace SeuPet.Enums
         Cachorro,
         [Display(Name = "Gato")]
         Gato,
-        [Display(Name = "Passáro")]
+        [Display(Name = "Pássaro")]
         Passaro
     }
 }
