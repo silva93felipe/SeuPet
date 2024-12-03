@@ -5,7 +5,7 @@ namespace SeuPet.Models
 {
     public class Pet : Base
     {
-        public int Id { get; private set;}
+        public int Id { get; set;}
         public string Nome { get; private set; }
         public DateTime DataNascimento { get; private set; }
         public SexoEnum Sexo { get; private set; }

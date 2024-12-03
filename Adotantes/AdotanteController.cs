@@ -1,6 +1,10 @@
+using System.Net.Http.Json;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using SeuPet.Dto;
 using SeuPet.Mapping;
 using SeuPet.Models;
@@ -13,39 +17,47 @@ namespace SeuPet.Controllers
     {
         private readonly SeuPetContext _context;
         private readonly IDistributedCache _cache;
-        private readonly string KEY_CACHE_PETS = "PETS";
-
+        private readonly string KEY_CACHE_ADOTANTE = "ADOTANTE";
+        private readonly DistributedCacheEntryOptions distributedCacheEntryOptions;
         public AdotantesController(SeuPetContext context, IDistributedCache cache)
         {
             _context = context;
             _cache = cache;
+            distributedCacheEntryOptions = new DistributedCacheEntryOptions(){
+                SlidingExpiration = TimeSpan.FromSeconds(60),
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(60),
+            };
         }
         [HttpGet]
         public async Task<IActionResult> GetAllAsync(int limit = 5, int offset = 0)
         {
-            var petsCache = _cache.GetAsync(KEY_CACHE_PETS);
-            if(petsCache == null){
-                
-            }
-            var result = await _context.Adotante
-                            .AsNoTracking()
-                            .Where(e => e.Ativo)
-                            .Take(limit)
-                            .Skip(offset)
-                            .OrderByDescending(e => e.Id)
-                            .Select(e => e.ToAdotanteResponse())
-                            .ToListAsync();
-            return Ok(new ResponseHtttp(System.Net.HttpStatusCode.OK, true, result));
+            var adotantes = await _context.Adotante
+                                .AsNoTracking()
+                                .Where(e => e.Ativo)
+                                .OrderByDescending(e => e.Id)
+                                .Take(limit)
+                                .Skip(offset)
+                                .Select(e => e.ToAdotanteResponse())
+                                .ToListAsync();            
+            return Ok(new ResponseHtttp(System.Net.HttpStatusCode.OK, true, adotantes));
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
-            var adotante = await _context.Adotante
+            var adotanteCache = await _cache.GetStringAsync($"{KEY_CACHE_ADOTANTE}_{id}");
+            Adotante adotante;
+            if( string.IsNullOrEmpty(adotanteCache) ){
+                adotante = await _context.Adotante
                                     .AsNoTracking()
                                     .FirstOrDefaultAsync(e => e.Id == id && e.Ativo);
-            if(adotante == null)
-                return NotFound(new ResponseHtttp(System.Net.HttpStatusCode.NotFound, false, new List<string>(){ "Adotante não encontrado" }));
+                if(adotante == null)
+                    return NotFound(new ResponseHtttp(System.Net.HttpStatusCode.NotFound, false, new List<string>(){ "Adotante não encontrado" }));
+                
+                await _cache.SetStringAsync($"{KEY_CACHE_ADOTANTE}_{id}", JsonConvert.SerializeObject(adotante), distributedCacheEntryOptions);
+                return Ok(new ResponseHtttp(System.Net.HttpStatusCode.OK, true, adotante.ToAdotanteResponse()));
+            }
+            adotante = JsonConvert.DeserializeObject<Adotante>(adotanteCache);
             return Ok(new ResponseHtttp(System.Net.HttpStatusCode.OK, true, adotante.ToAdotanteResponse()));
         }
 
@@ -54,7 +66,8 @@ namespace SeuPet.Controllers
         {
             Adotante newAdotante = new Adotante(request.Nome, request.Email, request.DataNascimento, request.Sexo);
             await _context.Adotante.AddAsync(newAdotante);
-            await _context.SaveChangesAsync();    
+            await _context.SaveChangesAsync();
+            await _cache.SetStringAsync(KEY_CACHE_ADOTANTE, JsonConvert.SerializeObject(newAdotante), distributedCacheEntryOptions);    
             return Created(string.Empty, new ResponseHtttp(System.Net.HttpStatusCode.OK, true, newAdotante.ToAdotanteResponse()));
         }
 
@@ -66,6 +79,7 @@ namespace SeuPet.Controllers
                 return NotFound(new ResponseHtttp(System.Net.HttpStatusCode.NotFound, false, new List<string>(){ "Adotante não encontrado" }));
             adotante.Update(request.Nome, request.Email, request.DataNascimento, request.Sexo);
             await _context.SaveChangesAsync();
+            await _cache.RemoveAsync($"{KEY_CACHE_ADOTANTE}_{id}");
             return NoContent();
         }
 
@@ -77,6 +91,7 @@ namespace SeuPet.Controllers
                 return NotFound(new ResponseHtttp(System.Net.HttpStatusCode.NotFound, false, new List<string>(){ "Adotante não encontrado" }));
             adotante.Inativar();
             await _context.SaveChangesAsync();
+            await _cache.RemoveAsync($"{KEY_CACHE_ADOTANTE}_{id}");
             return NoContent();            
         }
     }
