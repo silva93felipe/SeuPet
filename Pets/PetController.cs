@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
+using Newtonsoft.Json;
 using SeuPet.Dto;
 using SeuPet.Enums;
 using SeuPet.Mapping;
@@ -14,11 +16,19 @@ namespace SeuPet.Controllers
         private readonly string _pathServidor;
         private readonly string _pathDiretorioPet;
         private readonly SeuPetContext _context;
-        public PetsController(SeuPetContext context, IWebHostEnvironment env)
+        private readonly string KEY_CACHE_PET = "PET";
+        private readonly IDistributedCache _cache;
+        private readonly DistributedCacheEntryOptions distributedCacheEntryOptions;
+        public PetsController(SeuPetContext context, IWebHostEnvironment env, IDistributedCache cache)
         {
             _context = context;
             _pathServidor = env.ContentRootPath;
             _pathDiretorioPet = _pathServidor + "/Imagens/pets/";
+            _cache = cache;
+            distributedCacheEntryOptions = new DistributedCacheEntryOptions(){
+                SlidingExpiration = TimeSpan.FromSeconds(60),
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(60),
+            };
         }
         [HttpGet]
         public async Task<IActionResult> GetAllAsync(int limit = 5, int offset = 0)
@@ -37,9 +47,17 @@ namespace SeuPet.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
-            var pet = await _context.Pet.FirstOrDefaultAsync(p => p.Id == id && p.Status == StatusPetEnum.Espera && p.Ativo);
-            if(pet == null)
-                return NotFound(new ResponseHtttp(System.Net.HttpStatusCode.NotFound, false, new List<string>(){"Pet não encontrado"}));
+            var petCache = await _cache.GetStringAsync($"{KEY_CACHE_PET}_{id}");
+            Pet pet;
+            if( string.IsNullOrEmpty(petCache) ){
+                pet = await _context.Pet.FirstOrDefaultAsync(p => p.Id == id && p.Status == StatusPetEnum.Espera && p.Ativo);
+                if(pet == null)
+                    return NotFound(new ResponseHtttp(System.Net.HttpStatusCode.NotFound, false, new List<string>(){"Pet não encontrado"}));
+                
+                await _cache.SetStringAsync($"{KEY_CACHE_PET}_{id}", JsonConvert.SerializeObject(pet), distributedCacheEntryOptions);
+                return Ok(new ResponseHtttp(System.Net.HttpStatusCode.OK, true, pet.ToPetResponse()));
+            }
+            pet = JsonConvert.DeserializeObject<Pet>(petCache);
             return Ok(new ResponseHtttp(System.Net.HttpStatusCode.OK, true, pet.ToPetResponse()));
         }
 
@@ -53,6 +71,7 @@ namespace SeuPet.Controllers
                 newPet.UpdateImagem(await CreateDirectoryImagemPet(request.Foto, newPet.Id));
                 await _context.SaveChangesAsync();
             }
+            await _cache.SetStringAsync($"{KEY_CACHE_PET}_{newPet.Id}", JsonConvert.SerializeObject(newPet), distributedCacheEntryOptions);
             return Created(string.Empty, new ResponseHtttp(System.Net.HttpStatusCode.OK, true, newPet.ToPetResponse()));
         }
 
@@ -123,6 +142,7 @@ namespace SeuPet.Controllers
                 petDb.UpdateImagem(await CreateDirectoryImagemPet(request.Foto, id));
             }
             await _context.SaveChangesAsync();
+            await _cache.RemoveAsync($"{KEY_CACHE_PET}_{id}");
             return NoContent();
         }
 
@@ -134,6 +154,7 @@ namespace SeuPet.Controllers
                 return NotFound(new ResponseHtttp(System.Net.HttpStatusCode.NotFound, false, new List<string>(){"Pet não encontrado"}));
             petNoBanco.Inativar();
             await _context.SaveChangesAsync();
+            await _cache.RemoveAsync($"{KEY_CACHE_PET}_{id}");
             return NoContent();            
         }
     }
