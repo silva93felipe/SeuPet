@@ -7,7 +7,7 @@ namespace SeuPet.Services
         Task<List<AdotanteResponse>> GetAllAsync(int limit, int offset);
         Task<AdotanteResponse> GetByIdAsync(int id);
         Task<AdotanteResponse> CreateAsync(AdotanteRequest request);
-        Task<bool> UpdateAsync(int id, AdotanteRequest request);
-        Task<bool> DeleteAsync(int id);
+        Task UpdateAsync(int id, AdotanteRequest request);
+        Task DeleteAsync(int id);
     }
 }

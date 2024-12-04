@@ -24,8 +24,6 @@ namespace SeuPet.Controllers
         public async Task<IActionResult> GetByIdAsync(int id)
         {
             var adotante = await _adotanteService.GetByIdAsync(id);
-            if(adotante == null)
-                return NotFound(new ResponseHtttp(System.Net.HttpStatusCode.NotFound, false, new List<string>(){ "Adotante não encontrado" }));
             return Ok(new ResponseHtttp(System.Net.HttpStatusCode.OK, true, adotante));
         }
 
@@ -39,18 +37,14 @@ namespace SeuPet.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync(int id, AdotanteRequest request)
         { 
-            var wasUpdate = await _adotanteService.UpdateAsync(id, request);
-            if( !wasUpdate )
-                return NotFound(new ResponseHtttp(System.Net.HttpStatusCode.NotFound, false, new List<string>(){ "Adotante não encontrado" }));
+            await _adotanteService.UpdateAsync(id, request);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
-            var wasDelete = await _adotanteService.DeleteAsync(id);
-            if( !wasDelete )
-                return NotFound(new ResponseHtttp(System.Net.HttpStatusCode.NotFound, false, new List<string>(){ "Adotante não encontrado" }));
+            await _adotanteService.DeleteAsync(id);
             return NoContent();            
         }
     }
