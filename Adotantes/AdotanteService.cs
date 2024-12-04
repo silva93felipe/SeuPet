@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using SeuPet.Dto;
 using SeuPet.Mapping;
@@ -26,15 +24,14 @@ namespace SeuPet.Services
             return adotante.ToAdotanteResponse();
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task DeleteAsync(int id)
         {
             var adotante = await _adotanteRepository.GetByIdAsync(id);
             if( adotante == null )
-                return false;
+                throw new AdotanteNotFoundException();
             adotante.Inativar();
             await _adotanteRepository.Save();
             await _cache.RemoveAsync($"{KEY_CACHE_ADOTANTE}_{id}");
-            return true;
         }
 
         public async Task<List<AdotanteResponse>> GetAllAsync(int limit, int offset){
@@ -49,6 +46,9 @@ namespace SeuPet.Services
             Adotante adotante;
             if( string.IsNullOrEmpty(adotanteCache) ){
                 adotante = await _adotanteRepository.GetByIdAsync(id);
+                if(adotante == null){
+                    throw new AdotanteNotFoundException();
+                }
                 await _cache.SetStringAsync($"{KEY_CACHE_ADOTANTE}_{id}", JsonConvert.SerializeObject(adotante));
                 return adotante.ToAdotanteResponse();
             }
@@ -56,16 +56,15 @@ namespace SeuPet.Services
             return adotante.ToAdotanteResponse();
         }
 
-        public async Task<bool> UpdateAsync(int id, AdotanteRequest request)
+        public async Task UpdateAsync(int id, AdotanteRequest request)
         {
             var adotante = await _adotanteRepository.GetByIdAsync(id);
             if(adotante == null){
-                return false;
+                throw new AdotanteNotFoundException();
             }
             adotante.Update(request.Nome, request.Email, request.DataNascimento, request.Sexo);
             await _adotanteRepository.Save();
             await _cache.RemoveAsync($"{KEY_CACHE_ADOTANTE}_{id}");
-            return true;
         }
     }
 }

@@ -11,9 +11,12 @@
     > Redis
 - Tratar erros globais com handler?
     > Fiz um middleware
-- Como Usar cancelation token
 - Usar SOLID
+    > Feito
 - Criar erros customizados?
+    > Feito
+- Como Usar cancelation token
+- Como permitir prosseguir mesmo que não conecte com o banco do redis?
 - query parametros para fazer consulta conforme filtro?
 - Criar testes
 

@@ -58,8 +58,12 @@ namespace SeuPet.Models
             DataAdocao = DateTime.UtcNow;
         }
 
+        public bool IsAdotado(){
+            return Status == StatusPetEnum.Adotado && AdotanteId != null;
+        }
+
         private void JaAdotado(){
-            if(Status == StatusPetEnum.Adotado || AdotanteId != null)
+            if( IsAdotado())
                 throw new ArgumentException("Pet já adotado.");
         }
 
