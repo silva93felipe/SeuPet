@@ -1,18 +1,16 @@
 using Microsoft.EntityFrameworkCore;
-using SeuPet.Repository;
-using SeuPet.Services;
+using SeuPet.Api.Context;
+using SeuPet.Infra;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddScoped<IAdotanteService, AdotanteService>();
-builder.Services.AddScoped<ICacheService, CacheService>();
-builder.Services.AddScoped<IAdotanteRepository, AdotanteRepository>();
-builder.Services.AddScoped<IPetRepository, PetRepository>();
-builder.Services.AddScoped<IPetService, PetService>();
+builder.Services.AddServices();
 builder.Services.AddDbContext<SeuPetContext>( options => {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("Test"));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("ConnectionDb"));
+    //options.UseNpgsql(Environment.GetEnvironmentVariable("ConnectionDb"));
 });
 builder.Services.AddStackExchangeRedisCache(c => {
-    c.Configuration = builder.Configuration.GetConnectionString("Cache");
+    c.Configuration = builder.Configuration.GetConnectionString("ConnectionCache");
+    //c.Configuration = Environment.GetEnvironmentVariable("ConnectionCache");
 });
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -23,8 +21,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.UseHttpsRedirection();
 app.UseMiddleware<GlobalExceptionMiddleware>();
+app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();

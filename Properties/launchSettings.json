@@ -9,11 +9,9 @@
     }
   },
   "profiles": {
-    "pet_SeuPet": {
+    "SeuPet": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "launchBrowser": true,
-      "launchUrl": "SeuPet",
       "applicationUrl": "https://localhost:7145;http://localhost:5036",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
