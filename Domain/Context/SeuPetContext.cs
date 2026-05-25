@@ -1,12 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using SeuPet.Domain.Entity;
 
-namespace SeuPet.Api.Context;
+namespace SeuPet.Domain.Context;
 public class SeuPetContext : DbContext
 {
     public DbSet<Pet> Pet { get; set; }
     public DbSet<Adotante> Adotante { get; set; }
     public DbSet<Usuario> Usuario { get; set; }
+    public DbSet<Empresa> Empresa { get; set; }
     public SeuPetContext(DbContextOptions<SeuPetContext> options) : base(options){ }
     protected override void OnModelCreating(ModelBuilder modelBuilder){
         modelBuilder.Entity<Pet>()
@@ -61,11 +62,25 @@ public class SeuPetContext : DbContext
         modelBuilder.Entity<Usuario>()  
                     .Property(e => e.Nome).IsRequired().HasMaxLength(100);
         modelBuilder.Entity<Usuario>()  
-                    .Property(e => e.Email).IsRequired().HasMaxLength(100);
+                    .Property(e => e.Email).IsRequired().HasMaxLength(150);
         modelBuilder.Entity<Usuario>()  
                     .Property(e => e.CreateAt).HasDefaultValue(DateTime.UtcNow);
         modelBuilder.Entity<Usuario>()  
                     .Property(e => e.UpdateAt).HasDefaultValue(DateTime.UtcNow);
-        modelBuilder.Entity<Usuario>().HasIndex(e => e.Id);            
+        modelBuilder.Entity<Usuario>().HasIndex(e => e.Id);    
+        
+        modelBuilder.Entity<Empresa>()
+            .HasKey(p => p.Id);     
+        modelBuilder.Entity<Empresa>()
+            .Property(e => e.Ativo).IsRequired();
+        modelBuilder.Entity<Empresa>()  
+            .Property(e => e.Nome).IsRequired().HasMaxLength(150);
+        modelBuilder.Entity<Empresa>()  
+            .Property(e => e.Email).IsRequired().HasMaxLength(150);
+        modelBuilder.Entity<Empresa>()  
+            .Property(e => e.CreateAt).HasDefaultValue(DateTime.UtcNow);
+        modelBuilder.Entity<Empresa>()  
+            .Property(e => e.UpdateAt).HasDefaultValue(DateTime.UtcNow);
+        modelBuilder.Entity<Empresa>().HasIndex(e => e.Id);     
     }
 }

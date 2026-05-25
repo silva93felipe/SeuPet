@@ -1,4 +1,3 @@
-using System;
 using SeuPet.Domain.Enums;
 
 namespace SeuPet.Domain.Entity

@@ -1,6 +1,8 @@
 using System.Net;
 using SeuPet.Api.Dto;
 
+namespace SeuPet.Middleware;
+
 public class GlobalExceptionMiddleware{
     private readonly RequestDelegate _next;
     

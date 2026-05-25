@@ -1,6 +1,4 @@
 using SeuPet.Domain.Contracts;
-using SeuPet.Domain.Contracts.Repository;
-using SeuPet.Domain.Contracts.Services;
 using SeuPet.Domain.Services;
 using SeuPet.Infra.Repository;
 using SeuPet.Infra.Services;

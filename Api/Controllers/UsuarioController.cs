@@ -27,7 +27,42 @@ namespace SeuPet.Api.Controllers
         public async Task<IActionResult> LoginAsync(LoginRequest request)
         {
             var token = await _usuarioService.Login(request);
-            return Ok(new ResponseHttp( HttpStatusCode.OK, true, token ));
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,   // Bloqueia acesso via JavaScript (Protege contra XSS)
+                Secure = true,     // Exige HTTPS
+                SameSite = SameSiteMode.Strict, // Protege contra CSRF
+                Expires = DateTime.UtcNow.AddMinutes(10) // Mesmo tempo de expiração do JWT
+            };
+
+            // Adiciona o cookie na resposta HTTP com o nome "X-Access-Token"
+            Response.Cookies.Append("X-Access-Token", token.Item1, cookieOptions);
+            Response.Cookies.Append("X-Refresh-Token", token.Item2, cookieOptions);
+            return Ok(new ResponseHttp( HttpStatusCode.OK, true, string.Empty ));
+        }
+        [HttpPost]
+        [Route("refresh-token")]
+        public async Task<IActionResult> RefreshToken()
+        {
+            // 1. Recupera o Refresh Token dos cookies
+            if (!Request.Cookies.TryGetValue("X-Refresh-Token", out var refreshTokenValue))
+                return Unauthorized("Refresh Token ausente.");
+            
+            var response = await _usuarioService.RefreshToken(refreshTokenValue);
+            if(string.IsNullOrEmpty(response.Item1)) return Unauthorized("Refresh Token inválido.");
+            
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,   // Bloqueia acesso via JavaScript (Protege contra XSS)
+                Secure = true,     // Exige HTTPS
+                SameSite = SameSiteMode.Strict, // Protege contra CSRF
+                Expires = DateTime.UtcNow.AddMinutes(10) // Mesmo tempo de expiração do JWT
+            };
+
+            // Adiciona o cookie na resposta HTTP com o nome "X-Access-Token"
+            Response.Cookies.Append("X-Access-Token", response.Item1, cookieOptions);
+            Response.Cookies.Append("X-Refresh-Token", response.Item2, cookieOptions);
+            return Ok(new ResponseHttp( HttpStatusCode.OK, true, string.Empty ));
         }
     }
 }

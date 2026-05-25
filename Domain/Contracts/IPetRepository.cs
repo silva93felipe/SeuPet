@@ -1,6 +1,6 @@
 using SeuPet.Domain.Entity;
 
-namespace SeuPet.Domain.Contracts.Repository
+namespace SeuPet.Domain.Contracts
 {
     public interface IPetRepository
     {

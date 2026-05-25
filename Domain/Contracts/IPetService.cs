@@ -1,6 +1,6 @@
 using SeuPet.Api.Dto.Pet;
 
-namespace SeuPet.Domain.Contracts.Services
+namespace SeuPet.Domain.Contracts
 {
     public interface IPetService
     {

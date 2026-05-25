@@ -5,7 +5,7 @@ public class EmpresaRequest
     public string Nome { get; set; }
     public string Telefone { get; set; }
     public string Email { get; set; }
-    public EmpresaRequest Endereco { get; set; }
+    public EnderecoRequest Endereco { get; set; }
 }
 
 public class EnderecoRequest

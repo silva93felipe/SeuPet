@@ -2,8 +2,7 @@
 using Newtonsoft.Json;
 using SeuPet.Api.Dto.Adotante;
 using SeuPet.Api.Mapping;
-using SeuPet.Domain.Contracts.Repository;
-using SeuPet.Domain.Contracts.Services;
+using SeuPet.Domain.Contracts;
 using SeuPet.Domain.Entity;
 using SeuPet.Infra.Exceptions;
 using SeuPet.Infra.Services;

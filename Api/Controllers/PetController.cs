@@ -2,7 +2,7 @@ using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using SeuPet.Api.Dto;
 using SeuPet.Api.Dto.Pet;
-using SeuPet.Domain.Contracts.Services;
+using SeuPet.Domain.Contracts;
 
 namespace SeuPet.Api.Controllers
 {

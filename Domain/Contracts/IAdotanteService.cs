@@ -1,7 +1,6 @@
 using SeuPet.Api.Dto.Adotante;
-using SeuPet.Domain.Contracts;
 
-namespace SeuPet.Domain.Contracts.Services
+namespace SeuPet.Domain.Contracts
 {
     public interface IAdotanteService
     {

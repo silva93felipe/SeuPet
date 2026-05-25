@@ -4,14 +4,13 @@ namespace SeuPet.Domain.Entity
     {
         public string Nome { get; private set; }
         public string Email { get; private set; }
-        public string Hash { get; private set; }
+        public byte[] Hash { get; private set; }
         public byte[] Salt  { get; private set; }
         private Usuario(){}
-        public Usuario(string nome, string email, string senha,  byte[] salt)
+        public Usuario(string nome, string email, byte[] senha,  byte[] salt)
         {
             Validar(nome);
             Validar(email);
-            Validar(senha);
             Nome = nome;
             Email = email;
             Hash = senha;

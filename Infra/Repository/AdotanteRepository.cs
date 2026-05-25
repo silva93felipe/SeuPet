@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using SeuPet.Api.Context;
-using SeuPet.Domain.Contracts.Repository;
+using SeuPet.Domain.Context;
+using SeuPet.Domain.Contracts;
 using SeuPet.Domain.Entity;
 
 namespace SeuPet.Infra.Repository
