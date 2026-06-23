@@ -15,15 +15,17 @@ namespace SeuPet.Domain.Services
         private readonly string _pathDiretorioPet;
         private readonly IPetRepository _petRepository;
         private readonly IAdotanteService _adotanteService;
+        private readonly IAdocaoRepository _adocaoRepository;
         private readonly string KEY_CACHE_PET = "PET";
         private readonly ICacheService _cache;
-        public PetService(IWebHostEnvironment env, ICacheService cache, IPetRepository petRepository, IAdotanteService adotanteService)
+        public PetService(IWebHostEnvironment env, ICacheService cache, IPetRepository petRepository, IAdotanteService adotanteService, IAdocaoRepository adocaoRepository)
         {
             _pathServidor = env.ContentRootPath;
             _pathDiretorioPet = _pathServidor + "/Imagens/pets/";
             _cache = cache;
             _petRepository = petRepository;
             _adotanteService = adotanteService;
+            _adocaoRepository = adocaoRepository;
         }
         public async Task<List<PetResponse>> GetAllAsync(int limit = 5, int offset = 0){
             var pets = await _petRepository.GetAllAsync(limit, offset);
@@ -102,7 +104,9 @@ namespace SeuPet.Domain.Services
             AdotanteResponse? adotante = await _adotanteService.GetByIdAsync(adotanteId);
             if(adotante == null)
                 throw new AdotanteNotFoundException();
-            pet.Adotar(adotante.Id);
+            Adocao adocao = new Adocao(adotante.Id, pet.Id);
+            await _adocaoRepository.Create(adocao);
+            pet.Adotar();
             await _petRepository.Update(pet);
             await _cache.RemoveAsync($"{KEY_CACHE_PET}_{id}");    
         }

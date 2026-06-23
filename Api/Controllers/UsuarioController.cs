@@ -1,4 +1,5 @@
 using System.Net;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SeuPet.Api.Dto;
 using SeuPet.Api.Dto.Usuario;
@@ -15,6 +16,7 @@ namespace SeuPet.Api.Controllers
         {
             _usuarioService = usuarioService;
         }
+        
         [HttpPost]
         public async Task<IActionResult> CreateAsync(UsuarioRequest request)
         {
@@ -40,16 +42,17 @@ namespace SeuPet.Api.Controllers
             Response.Cookies.Append("X-Refresh-Token", token.Item2, cookieOptions);
             return Ok(new ResponseHttp( HttpStatusCode.OK, true, string.Empty ));
         }
+        
         [HttpPost]
         [Route("refresh-token")]
         public async Task<IActionResult> RefreshToken()
         {
             // 1. Recupera o Refresh Token dos cookies
             if (!Request.Cookies.TryGetValue("X-Refresh-Token", out var refreshTokenValue))
-                return Unauthorized("Refresh Token ausente.");
+                return Unauthorized(new ResponseHttp( HttpStatusCode.Unauthorized, false, string.Empty, new []{"Refresh Token inválido."}));
             
             var response = await _usuarioService.RefreshToken(refreshTokenValue);
-            if(string.IsNullOrEmpty(response.Item1)) return Unauthorized("Refresh Token inválido.");
+            if(string.IsNullOrEmpty(response.Item1)) return Unauthorized(new ResponseHttp( HttpStatusCode.Unauthorized, false, string.Empty, new []{"Refresh Token inválido."}));
             
             var cookieOptions = new CookieOptions
             {

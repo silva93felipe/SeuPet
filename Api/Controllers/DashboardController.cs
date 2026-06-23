@@ -1,4 +1,5 @@
 using System.Net;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SeuPet.Api.Dto;
 
@@ -6,6 +7,7 @@ namespace SeuPet.Api.Controllers;
 
 public class DashboardController : ControllerBase
 {
+    [Authorize]
     [ApiController]
     [Route("api/v1/dashboard")]
     public class AdotantesController : ControllerBase

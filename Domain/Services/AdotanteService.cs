@@ -21,7 +21,7 @@ namespace SeuPet.Domain.Services
         }
         public async Task<AdotanteResponse> CreateAsync(AdotanteRequest request)
         {
-            Adotante newAdotante = new Adotante(request.Nome, request.Email, request.DataNascimento, request.Sexo, request.Telefone);
+            Adotante newAdotante = new Adotante(request.Nome, request.DataNascimento, request.Sexo, request.Telefone);
             var adotante = await _adotanteRepository.CreateAsync(newAdotante);
             await _cache.SetStringAsync(KEY_CACHE_ADOTANTE, JsonConvert.SerializeObject(adotante));
             return adotante.ToAdotanteResponse();
@@ -65,7 +65,7 @@ namespace SeuPet.Domain.Services
             if(adotante == null){
                 throw new AdotanteNotFoundException();
             }
-            adotante.Update(request.Nome, request.Email, request.DataNascimento, request.Sexo, request.Telefone);
+            adotante.Update(request.Nome, request.DataNascimento, request.Sexo, request.Telefone);
             await _adotanteRepository.Update(adotante);
             await _cache.RemoveAsync($"{KEY_CACHE_ADOTANTE}_{id}");
         }

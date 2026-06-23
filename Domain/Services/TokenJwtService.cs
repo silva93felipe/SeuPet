@@ -15,8 +15,8 @@ public static class TokenJwtService
             ValidateAudience = true,
             ValidateLifetime = true,
             ClockSkew = TimeSpan.Zero,
-            ValidAudience = configuration["Jwt:SeuPetApi"],
-            ValidIssuer = configuration["Jwt:SeuPet"]
+            ValidAudience = configuration["Jwt:Audience"],
+            ValidIssuer = configuration["Jwt:Issuer"]
         };
     }
 }

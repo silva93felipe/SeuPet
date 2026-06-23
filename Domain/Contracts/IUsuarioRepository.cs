@@ -6,5 +6,6 @@ public interface IUsuarioRepository
 {
     Task Create(Usuario request);
     Task<Usuario?> Login(string email);
-    Task<Usuario> GetById(int id);
+    Task<Usuario?> GetById(int id);
+    Task<bool> GetByEmail(string email);
 }

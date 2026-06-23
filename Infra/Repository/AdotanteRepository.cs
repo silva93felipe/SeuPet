@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using SeuPet.Domain.Context;
+using SeuPet.Domain;
 using SeuPet.Domain.Contracts;
 using SeuPet.Domain.Entity;
 

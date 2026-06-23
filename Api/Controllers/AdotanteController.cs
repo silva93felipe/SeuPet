@@ -1,4 +1,5 @@
 using System.Net;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SeuPet.Api.Dto;
 using SeuPet.Api.Dto.Adotante;
@@ -6,6 +7,7 @@ using SeuPet.Domain.Contracts;
 
 namespace SeuPet.Api.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/v1/adotantes")]
     public class AdotantesController : ControllerBase

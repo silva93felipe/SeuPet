@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using SeuPet.Domain.Context;
+using SeuPet.Domain;
 using SeuPet.Domain.Contracts;
 using SeuPet.Domain.Entity;
 
@@ -22,8 +22,11 @@ public class UsuarioRepository : IUsuarioRepository
         => await _context.SaveChangesAsync();
     
     public async Task<Usuario?> Login(string email)
-        => await _context.Usuario.AsNoTracking().FirstOrDefaultAsync(e => e.Email == email);
+        => await _context.Usuario.AsNoTracking().FirstOrDefaultAsync(e => e.Email.Value == email);
 
-    public async Task<Usuario> GetById(int id)
+    public async Task<Usuario?> GetById(int id)
         => await _context.Usuario.AsNoTracking().FirstOrDefaultAsync(e => e.Id == id);
+
+    public Task<bool> GetByEmail(string email)
+        => _context.Usuario.AsNoTracking().AnyAsync(e => e.Email.Value.Equals(email));
 }

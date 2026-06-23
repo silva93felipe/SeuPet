@@ -8,11 +8,6 @@ public class EmpresaRequest
     public EnderecoRequest Endereco { get; set; }
 }
 
-public class EnderecoRequest
-{
-    public string Logradoro { get; set; }
-    public string Bairro { get; set; }
-    public string Cidade { get; set; }
-    public string Estado { get; set; }
-    public string Numero { get; set; }
-}
+public record EnderecoRequest(string Logradoro, string Bairro, string Cidade, string Estado, string Numero);
+
+public record ValidarEmpresaRequest(Guid empresaId);

@@ -11,11 +11,19 @@ public static class DependencyInjector
     {
         services.AddScoped<IAdotanteService, AdotanteService>();
         services.AddScoped<ICacheService, CacheService>();
-        services.AddScoped<IAdotanteRepository, AdotanteRepository>();
-        services.AddScoped<IPetRepository, PetRepository>();
         services.AddScoped<IPetService, PetService>();
         services.AddScoped<IUsuarioService, UsuarioService>();
-        services.AddScoped<IUsuarioRepository, UsuarioRepository>();
         return services;
     }
+    
+    public static IServiceCollection AddRepositories(this IServiceCollection services)
+    {
+        services.AddScoped<IAdotanteRepository, AdotanteRepository>();
+        services.AddScoped<IPetRepository, PetRepository>();
+        services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+        services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+        services.AddScoped<IAdocaoRepository, AdocaoRepository>();
+        return services;
+    }
+    
 }

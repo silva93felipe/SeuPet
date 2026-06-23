@@ -12,7 +12,7 @@ namespace SeuPet.Domain.Entity
             Ativo = true;
             CreateAt = DateTime.UtcNow;
             UpdateAt = DateTime.UtcNow;
-            IdExterno = new Guid();
+            IdExterno = Guid.NewGuid();
         }
 
         public virtual void Inativar()

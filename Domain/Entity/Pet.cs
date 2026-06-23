@@ -10,10 +10,7 @@ namespace SeuPet.Domain.Entity
         public TipoSanguineoEnum TipoSanguineo { get; private set; }
         public StatusPetEnum Status { get; private set; }
         public TipoPetEnum Tipo { get; private set; } 
-        public string Foto {get; private set;}         
-        public virtual Adotante Adotante { get; private set; }
-        public int? AdotanteId { get; private set; }
-        public DateTime? DataAdocao {get; private set;}
+        public string Foto {get; private set;}   
         private Pet(){}
         public Pet(string nome, SexoEnum sexo, DateTime dataNascimento, TipoSanguineoEnum tipoSanguineo, TipoPetEnum tipo){
             IsValidNome(nome);
@@ -32,7 +29,6 @@ namespace SeuPet.Domain.Entity
         }
 
         public void Update(string nome, SexoEnum sexo, DateTime dataNascimento, TipoSanguineoEnum tipoSanguineo, TipoPetEnum tipo){
-            JaAdotado();
             IsValidNome(nome);
             Nome = nome;
             Sexo = sexo;
@@ -46,22 +42,14 @@ namespace SeuPet.Domain.Entity
             Foto = path;
         }
 
-        public void Adotar(int adotanteId){
-            JaAdotado();
+        public void Adotar()
+        {
             Status = StatusPetEnum.Adotado;
             UpdateAt = DateTime.UtcNow;
-            AdotanteId = adotanteId;
-            DataAdocao = DateTime.UtcNow;
-        }
-
-        private void JaAdotado(){
-            if( Status == StatusPetEnum.Adotado && AdotanteId != null )
-                throw new ArgumentException("Pet já adotado.");
         }
 
         public override void Inativar()
         {
-            JaAdotado();
             base.Inativar();
         }
     }

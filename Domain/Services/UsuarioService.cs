@@ -20,17 +20,25 @@ public class UsuarioService : IUsuarioService
         _usuarioRepository = usuarioRepository;
         _configuration = configuration;
     }
+
+    private Task<bool> UsuarioJaExiste(string email)
+        => _usuarioRepository.GetByEmail(email);
     public async Task Create(UsuarioRequest request)
     {
+        if (await UsuarioJaExiste(request.Email))
+            throw new ApplicationException("Usuário já existe.");
+        
         var salt = Guid.NewGuid().ToByteArray();
         byte[] senha = Argon2Service.HashPassword(request.Senha, out salt );
-        Usuario newUsuario = new Usuario(request.Nome, request.Email, senha, salt);
+        Usuario newUsuario = new Usuario(request.Email, senha, salt);
         await _usuarioRepository.Create(newUsuario);
     }
 
     public async Task<(string, string)> Login(LoginRequest request)
     {
         var usuario = await _usuarioRepository.Login(request.Email);
+        if(usuario == null)
+            throw new ApplicationException("Credenciais inválidas");
         if( !Argon2Service.VerifyPassword(request.Senha, usuario.Hash, usuario.Salt) ) throw new ApplicationException("Credenciais inválidas");
         return ( GerarToken(usuario), GerarRefreshToken(usuario) );
     }
@@ -55,7 +63,7 @@ public class UsuarioService : IUsuarioService
             Subject = new ClaimsIdentity(new[]
             {
                 new Claim("id", usuario.Id.ToString()),
-                new Claim("email", usuario.Email),
+                new Claim("email", usuario.Email.Value),
             }),
             Expires = DateTime.UtcNow.AddMinutes(int.Parse(_configuration["Jwt:ExpirationTimeInMinutes"])),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)), SecurityAlgorithms.HmacSha256Signature),
@@ -75,7 +83,7 @@ public class UsuarioService : IUsuarioService
             Subject = new ClaimsIdentity(new[]
             {
                 new Claim("id", usuario.Id.ToString()),
-                new Claim("email", usuario.Email),
+                new Claim("email", usuario.Email.Value),
             }),
             Expires = DateTime.UtcNow.AddMinutes(int.Parse(_configuration["Jwt:RefreshExpirationTimeInMinutes"])),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)), SecurityAlgorithms.HmacSha256Signature),

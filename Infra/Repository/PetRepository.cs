@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using SeuPet.Domain.Context;
+using SeuPet.Domain;
 using SeuPet.Domain.Contracts;
 using SeuPet.Domain.Entity;
 
@@ -30,14 +30,14 @@ namespace SeuPet.Infra.Repository
         public async Task<List<Pet>> GetAllAsync(int limit, int offset)
             => await _context.Pet
                             .AsNoTracking()
-                            .Where(e => e.Ativo && e.AdotanteId != null)
+                            .Where(e => e.Ativo)
                             .OrderByDescending(e => e.Id)
                             .Take(limit)
                             .Skip(offset)
                             .ToListAsync();  
 
         public async Task<Pet?> GetByIdAsync(int id)
-            => await _context.Pet.FirstOrDefaultAsync(e => e.Id == id && e.Ativo && e.AdotanteId != null);
+            => await _context.Pet.FirstOrDefaultAsync(e => e.Id == id && e.Ativo);
 
         private async Task Commit()
             => await _context.SaveChangesAsync();

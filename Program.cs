@@ -1,14 +1,14 @@
-using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using SeuPet.Domain.Context;
+using Serilog;
+using SeuPet.Domain;
 using SeuPet.Domain.Services;
 using SeuPet.Infra;
 using SeuPet.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddServices();
+builder.Services.AddRepositories();
 builder.Services.AddDbContext<SeuPetContext>( options => {
     options.UseNpgsql(builder.Configuration.GetConnectionString("ConnectionDb"));
     //options.UseNpgsql(Environment.GetEnvironmentVariable("ConnectionDb"));
@@ -39,7 +39,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+// app.UseSerilogRequestLogging();
 app.UseMiddleware<GlobalExceptionMiddleware>();
 app.UseHttpsRedirection();
 app.UseAuthentication();
